@@ -28,7 +28,7 @@ parser.add_argument('--device', default='cuda', type=str)
 parser.add_argument('--s', default='1', type=str)
 parser.add_argument('--model', default='resnet32', type=str)
 parser.add_argument('--cifar', default=10, type=int)
-parser.add_argument('--gpu', '-g', default=0, type=int)
+parser.add_argument('-g', '--gpu', default=0, type=int)
 parser.add_argument('--print_frequence', default=1000, type=int)
 # Grafting setting
 parser.add_argument('--a', default=0.4, type=float)
