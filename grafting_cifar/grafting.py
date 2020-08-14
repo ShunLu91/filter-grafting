@@ -201,7 +201,7 @@ def gpu_monitor(gpu, sec, used=100):
 
 
 if __name__ == '__main__':
-    while gpu_monitor(gpu=args.gpu, sec=600, used=500):
+    while gpu_monitor(gpu=args.gpu, sec=600, used=1000):
         pass
 
     for epoch in range(start_epoch, args.epochs):
