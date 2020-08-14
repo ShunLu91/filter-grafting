@@ -28,6 +28,7 @@ parser.add_argument('--device', default='cuda', type=str)
 parser.add_argument('--s', default='1', type=str)
 parser.add_argument('--model', default='resnet32', type=str)
 parser.add_argument('--cifar', default=10, type=int)
+parser.add_argument('--gpu', '-g', default=0, type=int)
 parser.add_argument('--print_frequence', default=1000, type=int)
 # Grafting setting
 parser.add_argument('--a', default=0.4, type=float)
@@ -170,7 +171,39 @@ def train(epoch):
         lr_scheduler.step()
 
 
+def gpu_monitor(gpu, sec, used=100):
+    import time
+    import pynvml
+    import datetime
+
+    wait_min = sec // 60
+    divisor = 1024 * 1024
+    pynvml.nvmlInit()
+    handle = pynvml.nvmlDeviceGetHandleByIndex(gpu)
+    meminfo = pynvml.nvmlDeviceGetMemoryInfo(handle)
+    if meminfo.used / divisor < used:
+        print('{} GPU-{} free, start runing!'.format(
+            datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            gpu)
+        )
+        return False
+    else:
+        print('{} GPU-{}, Memory: total={}MB used={}MB free={}MB, waiting {}min...'.format(
+            datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            gpu,
+            meminfo.total / divisor,
+            meminfo.used / divisor,
+            meminfo.free / divisor,
+            wait_min)
+        )
+        time.sleep(sec)
+        return True
+
+
 if __name__ == '__main__':
+    while gpu_monitor(gpu=args.gpu, sec=600, used=500):
+        pass
+
     for epoch in range(start_epoch, args.epochs):
         train(epoch)
         test(epoch)
